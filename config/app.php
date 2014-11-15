@@ -141,6 +141,7 @@ return [
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 
+		'App\Services\Watcher\Service\Provider',
 	],
 
 	/*
@@ -199,6 +200,7 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 
+	    'Watcher'   => 'App\Services\Watcher\Service\Facade',
 	],
 
 ];

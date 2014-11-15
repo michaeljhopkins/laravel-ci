@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use PragmaRX\Support\Migration;
 
 class CreatePasswordResetsTable extends Migration {
 
@@ -10,7 +10,7 @@ class CreatePasswordResetsTable extends Migration {
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function migrateUp()
 	{
 		Schema::create('password_resets', function(Blueprint $table)
 		{
@@ -25,7 +25,7 @@ class CreatePasswordResetsTable extends Migration {
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function migrateDown()
 	{
 		Schema::drop('password_resets');
 	}

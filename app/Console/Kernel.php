@@ -12,6 +12,8 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'App\Console\Commands\InspireCommand',
+		'App\Console\Commands\RunCommand',
+		'App\Console\Commands\WatchCommand',
 	];
 
 	/**

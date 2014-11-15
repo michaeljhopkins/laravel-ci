@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use PragmaRX\Support\Migration;
 
-class CreateUsersTable extends Migration {
+class CreateProjectsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,16 @@ class CreateUsersTable extends Migration {
 	 */
 	public function migrateUp()
 	{
-		Schema::create('users', function(Blueprint $table)
+		Schema::create('projects', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('email')->unique();
-			$table->string('password', 60);
-			$table->rememberToken();
+
+			$table->string('name');
+
+			$table->string('path');
+
+			$table->string('tests_path');
+
 			$table->timestamps();
 		});
 	}
@@ -29,7 +33,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function migrateDown()
 	{
-		Schema::drop('users');
+		Schema::drop('projects');
 	}
 
 }

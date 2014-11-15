@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+use Artisan;
+
 class HomeController extends Controller {
 
 	/*
@@ -17,6 +19,8 @@ class HomeController extends Controller {
 
 	public function index()
 	{
+		Artisan::call('ci:watch');
+
 		return view('hello');
 	}
 
