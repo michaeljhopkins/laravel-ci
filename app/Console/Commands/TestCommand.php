@@ -1,26 +1,22 @@
 <?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Foundation\Inspiring;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
-class RunCommand extends Command {
+class TestCommand extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'ci:run';
+	protected $name = 'ci:test';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Run the tests';
+	protected $description = 'Continuously run tests';
 
 	/**
 	 * Create a new command instance.
@@ -39,7 +35,7 @@ class RunCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->getLaravel()->make('ci.watcher')->run($this);
+		$this->getLaravel()->make('ci.tester')->run($this);
 	}
 
 }

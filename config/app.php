@@ -142,6 +142,8 @@ return [
 		'Illuminate\View\ViewServiceProvider',
 
 		'App\Services\Watcher\Service\Provider',
+
+		'JasonLewis\ResourceWatcher\Integration\LaravelServiceProvider',
 	],
 
 	/*

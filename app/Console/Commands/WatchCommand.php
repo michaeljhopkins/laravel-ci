@@ -1,10 +1,6 @@
 <?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Foundation\Inspiring;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class WatchCommand extends Command {
 
@@ -20,7 +16,7 @@ class WatchCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Watch for changes on tests and code';
+	protected $description = 'Watch for file changes';
 
 	/**
 	 * Create a new command instance.

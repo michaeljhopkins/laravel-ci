@@ -9,6 +9,7 @@ return [
 	'projects' => [
 		'consultoriodigital' => [
 			'path' => '/var/www/consultoriodigital.dev',
+			'watch_folders' => ['app', 'tests'],
 			'tests_path' => 'tests',
 		    'suites' => [
 				'functional' => [

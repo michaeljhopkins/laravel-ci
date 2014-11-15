@@ -19,7 +19,7 @@ class HomeController extends Controller {
 
 	public function index()
 	{
-		Artisan::call('ci:watch');
+//		Artisan::call('ci:watch');
 
 		return view('hello');
 	}

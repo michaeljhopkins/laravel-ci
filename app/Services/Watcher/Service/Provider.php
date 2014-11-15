@@ -21,6 +21,7 @@ class Provider extends ServiceProvider {
 	public function register()
 	{
 		$this->registerWatcher();
+		$this->registerTester();
 	}
 
 	private function registerWatcher()
@@ -39,6 +40,14 @@ class Provider extends ServiceProvider {
 	public function provides()
 	{
 		return ['ci.watcher'];
+	}
+
+	private function registerTester()
+	{
+		$this->app->singleton('ci.tester', function($app)
+		{
+			return $this->app->make('App\Services\Watcher\Service\Tester');
+		});
 	}
 
 }

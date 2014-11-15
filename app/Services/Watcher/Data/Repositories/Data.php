@@ -2,13 +2,16 @@
 
 namespace App\Services\Watcher\Data\Repositories;
 
+use App\Services\Watcher\Data\Entities\Queue;
 use App\Services\Watcher\Data\Entities\Tester;
 use App\Services\Watcher\Data\Entities\Project;
 use App\Services\Watcher\Data\Entities\Suite;
 use App\Services\Watcher\Data\Entities\Test;
 use Symfony\Component\Finder\Finder;
 
-class Watcher {
+class Data {
+
+	const QUEUED = 'queued';
 
 	public function createOrUpdateTester($name, $command)
 	{
@@ -42,11 +45,14 @@ class Watcher {
 
 	public function createOrUpdateTest($file, $suite)
 	{
-		Test::updateOrCreate([
-            'name' => $file->getRelativePathname(),
-            'suite_id' => $suite->id,
-		    'state' => 'queued',
-		]);
+		$test = Test::updateOrCreate(
+			[
+	            'name' => $file->getRelativePathname(),
+	            'suite_id' => $suite->id
+			]
+		);
+
+		$this->addTestToQueue($test);
 	}
 
 	public function syncTests()
@@ -85,6 +91,46 @@ class Watcher {
 		}
 
 		return iterator_to_array($files, false);
+	}
+
+	public function isTestFile($path)
+	{
+		foreach(Test::all() as $test)
+		{
+			if ($test->fullPath == $path)
+			{
+				return $test;
+			}
+		}
+
+		return false;
+	}
+
+	public function queueAllTests()
+	{
+		foreach(Test::all() as $test)
+		{
+			$this->addTestToQueue($test);
+		}
+	}
+
+	public function addTestToQueue($test)
+	{
+		Queue::updateOrCreate(['test_id' => $test->id]);
+
+		$test->state = self::QUEUED;
+
+		$test->save();
+	}
+
+	public function getNextTestFromQueue()
+	{
+		if ( ! $queue = Queue::first())
+		{
+			return;
+		}
+
+		return $queue->test;
 	}
 
 }

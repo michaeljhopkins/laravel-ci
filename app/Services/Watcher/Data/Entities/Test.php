@@ -8,7 +8,18 @@ class Test extends Model {
 
 	protected $fillable = [
 		'suite_id',
-		'name'
+		'name',
+		'state',
 	];
+
+	public function getFullPathAttribute($value)
+	{
+		return make_path([$this->suite->testsFullPath, $this->name]);
+	}
+
+	public function suite()
+	{
+		return $this->belongsTo('App\Services\Watcher\Data\Entities\Suite');
+	}
 
 }
