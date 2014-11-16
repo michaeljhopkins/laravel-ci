@@ -1,8 +1,6 @@
 <?php namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
-class WatchCommand extends Command {
+class WatchCommand extends BaseCommand {
 
 	/**
 	 * The console command name.

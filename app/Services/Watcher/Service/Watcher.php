@@ -46,6 +46,13 @@ class Watcher {
 	protected $command;
 
 	/**
+	 * Exclude folders.
+	 *
+	 * @var
+	 */
+	protected $excludeFolders;
+
+	/**
 	 * Watcher Repository.
 	 *
 	 * @var DataRepository
@@ -74,9 +81,11 @@ class Watcher {
 	{
 		$this->command = $command;
 
+		$this->command->comment('Laravel-CI - Watcher');
+
 		$this->initialize();
 
-		$this->info('Watching...');
+		$this->command->line('Watching...');
 
 		$this->watch();
 
@@ -91,13 +100,13 @@ class Watcher {
 	{
 		if ( ! $this->is_initialized)
 		{
-			$this->info('Loading testers...');
+			$this->command->line('Loading testers...');
 			$this->loadTesters();
 
-			$this->info('Loading projects and suites...');
+			$this->command->line('Loading projects and suites...');
 			$this->loadProjects();
 
-			$this->info('Loading tests...');
+			$this->command->line('Loading tests...');
 			$this->loadTests();
 
 			$this->is_initialized = true;
@@ -110,9 +119,9 @@ class Watcher {
 	 */
 	private function loadTesters()
 	{
-		foreach(Config::get('watcher.testers') as $name => $command)
+		foreach(Config::get('watcher.testers') as $name => $data)
 		{
-			$this->dataRepository->createOrUpdateTester($name, $command);
+			$this->dataRepository->createOrUpdateTester($name, $data);
 		}
 	}
 
@@ -132,6 +141,8 @@ class Watcher {
 			}
 
 			$this->addToWatchFolders($data['path'], $data['watch_folders']);
+
+			$this->addToExcludeFolders($data['path'], $data['exclude_folders']);
 		}
 	}
 
@@ -158,6 +169,14 @@ class Watcher {
 		}
 	}
 
+	private function addToExcludeFolders($path, $exclude_folders)
+	{
+		foreach($exclude_folders as $folder)
+		{
+			$this->excludeFolders[] = make_path([$path, $folder]);
+		}
+	}
+
 	private function watch()
 	{
 		$me = $this;
@@ -168,7 +187,10 @@ class Watcher {
 
 			$this->listeners[$folder]->anything(function($event, $resource, $path) use ($me)
 			{
-				$me->fireEvent($event, $resource, $path);
+				if ( ! $me->folderIsExcluded($path))
+				{
+					$me->fireEvent($event, $resource, $path);
+				}
 			});
 		}
 
@@ -186,20 +208,20 @@ class Watcher {
 	{
 		$message = "File {$path} was ".$this->getEventName($event->getCode());
 
-		$this->drawLine(strlen($message));
+		$this->command->drawLine($message);
 
-		$this->info($message);
+		$this->command->line($message);
 
 		if ($test = $this->dataRepository->isTestFile($path))
 		{
-			$this->info('Test added to queue');
+			$this->command->line('Test added to queue');
 
 			$this->dataRepository->addTestToQueue($test);
 
 			return;
 		}
 
-		$this->info('All tests added to queue');
+		$this->command->line('All tests added to queue');
 
 		$this->dataRepository->queueAllTests();
 	}
@@ -224,14 +246,17 @@ class Watcher {
 		return $event;
 	}
 
-	private function drawLine($len)
+	public function folderIsExcluded($folder)
 	{
-		$this->info(str_repeat('-', max($len, 80)));
-	}
+		foreach($this->excludeFolders as $excluded)
+		{
+			if (starts_with($folder, $excluded))
+			{
+				return true;
+			}
+		}
 
-	private function info($string)
-	{
-		$this->command->info($string);
+		return false;
 	}
 
 }

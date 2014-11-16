@@ -4,12 +4,12 @@ namespace App\Services\Watcher\Data\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Tester extends Model {
+class Run extends Model {
 
 	protected $fillable = [
-		'name',
-		'command',
-	    'ok_matcher',
+		'test_id',
+		'was_ok',
+	    'log',
 	];
 
 }

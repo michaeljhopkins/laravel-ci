@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Services\Watcher\Data\Repositories\Data;
 use Artisan;
 
 class HomeController extends Controller {
@@ -21,7 +22,12 @@ class HomeController extends Controller {
 	{
 //		Artisan::call('ci:watch');
 
-		return view('hello');
+		return view('home');
+	}
+
+	public function allTests(Data $dataRepository)
+	{
+		return $dataRepository->getAllTests();
 	}
 
 }

@@ -13,6 +13,8 @@
 
 $router->get('/', 'HomeController@index');
 
+$router->get('tests/all', 'HomeController@allTests');
+
 /*
 |--------------------------------------------------------------------------
 | Authentication & Password Reset Controllers

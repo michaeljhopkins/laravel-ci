@@ -13,6 +13,8 @@ class ShellExec {
 			$command = 'cd '.$exec_path.'; ' . $command;
 		}
 
+		$lines = [$command];
+
 		flush();
 
 		$fp = popen($command, "r");
@@ -20,7 +22,7 @@ class ShellExec {
 		while( ! feof($fp))
 		{
 			// send the current file part to the browser
-			$line = fread($fp, 1024);
+			$lines[] = $line = fread($fp, 1024);
 
 			if ($callable)
 			{
@@ -32,6 +34,8 @@ class ShellExec {
 		}
 
 		fclose($fp);
+
+		return $lines;
 	}
 
 } 

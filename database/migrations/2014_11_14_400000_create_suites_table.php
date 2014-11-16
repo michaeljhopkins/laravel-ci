@@ -28,6 +28,8 @@ class CreateSuitesTable extends Migration {
 
 			$table->string('command_options');
 
+			$table->integer('retries')->default(0);
+
 			$table->timestamps();
 		});
 

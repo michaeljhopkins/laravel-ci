@@ -14,6 +14,7 @@ class Suite extends Model {
 		'suite_path',
 		'file_mask',
 		'command_options',
+	    'max_retries',
 	];
 
 	public function getTestsFullPathAttribute($value)

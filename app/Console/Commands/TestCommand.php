@@ -1,8 +1,6 @@
 <?php namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
-class TestCommand extends Command {
+class TestCommand extends BaseCommand {
 
 	/**
 	 * The console command name.
