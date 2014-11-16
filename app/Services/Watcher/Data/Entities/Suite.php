@@ -32,9 +32,21 @@ class Suite extends Model {
 		return $this->belongsTo('App\Services\Watcher\Data\Entities\Project');
 	}
 
+	public function tester()
+	{
+		return $this->belongsTo('App\Services\Watcher\Data\Entities\Tester');
+	}
+
 	public function tests()
 	{
 		return $this->hasMany('App\Services\Watcher\Data\Entities\Test');
+	}
+
+	public function getTestCommandAttribute($value)
+	{
+		$command = $this->tester->command . ' ' . $this->command_options;
+
+		return str_replace('%project_path%', $this->project->path, $command);
 	}
 
 }

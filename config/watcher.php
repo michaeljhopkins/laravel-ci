@@ -3,7 +3,7 @@
 return [
 
 	'testers' => [
-		'codeception' => 'sh %app_path%/vendor/bin/codecept run',
+		'codeception' => 'sh %project_path%/vendor/bin/codecept run',
 	],
 
 	'projects' => [

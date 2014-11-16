@@ -22,4 +22,11 @@ class Test extends Model {
 		return $this->belongsTo('App\Services\Watcher\Data\Entities\Suite');
 	}
 
+	public function getTestCommandAttribute($value)
+	{
+		$command = $this->suite->testCommand;
+
+		return $command . ' ' . $this->fullPath;
+	}
+
 }

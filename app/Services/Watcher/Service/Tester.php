@@ -3,6 +3,7 @@
 namespace App\Services\Watcher\Service;
 
 use App\Services\Watcher\Data\Repositories\Data as DataRepository;
+use App\Services\Watcher\Support\ShellExec;
 use Illuminate\Console\Command;
 
 class Tester {
@@ -15,13 +16,27 @@ class Tester {
 	protected $testing;
 
 	/**
+	 * The command object.
+	 *
+	 * @object Illuminate\Console\Command
+	 */
+	protected $command;
+
+	/**
+	 * @var ShellExec
+	 */
+	private $shell;
+
+	/**
 	 * Instantiate a Tester.
 	 *
 	 * @param DataRepository $dataRepository
 	 */
-	public function __construct(DataRepository $dataRepository)
+	public function __construct(DataRepository $dataRepository, ShellExec $shell)
 	{
 		$this->dataRepository = $dataRepository;
+
+		$this->shell = $shell;
 	}
 
 	/**
@@ -85,6 +100,8 @@ class Tester {
 	 */
 	private function test()
 	{
+		$me = $this;
+
 		if ( ! $test = $this->dataRepository->getNextTestFromQueue())
 		{
 			return;
@@ -92,7 +109,16 @@ class Tester {
 
 		$this->command->info('Testing '.$test->fullPath);
 
-//		$this->executeTest($test);
+		$this->command->info('Executing '.$test->testCommand);
+
+		$this->shell->exec($test->testCommand, $test->suite->project->path, function($line) use ($me)
+		{
+			$me->showProgress($line);
+		});
 	}
 
+	public function showProgress($line)
+	{
+		$this->command->info($line);
+	}
 }
