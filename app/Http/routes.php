@@ -13,7 +13,9 @@
 
 $router->get('/', 'HomeController@index');
 
-$router->get('tests/all', 'HomeController@allTests');
+$router->get('tests/{project_id?}', 'HomeController@allTests');
+
+$router->get('projects', 'HomeController@allProjects');
 
 /*
 |--------------------------------------------------------------------------

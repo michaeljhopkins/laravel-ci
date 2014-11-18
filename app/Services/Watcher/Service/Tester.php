@@ -134,12 +134,17 @@ class Tester {
 
 		foreach(range(0, $test->suite->retries) as $item)
 		{
-			$lines = $this->shell->exec($test->testCommand, $test->suite->project->path, function($line) use ($me)
+			$process = $this->shell->exec($test->testCommand, $test->suite->project->path, function($type, $buffer) use ($me)
 			{
-				// $me->showProgress($line);
+				if (Config::get('watcher.show_progress'))
+				{
+					$me->showProgress($buffer);
+				}
 			});
 
-			if ($this->dataRepository->testIsOk($test, $lines))
+			$lines = $process->getOutput();
+
+			if ($ok = ($process->getExitCode() === 0))
 			{
 				break;
 			}
@@ -147,7 +152,7 @@ class Tester {
 			$this->command->line('retrying...');
 		}
 
-		if ($this->dataRepository->storeTestResult($test, $lines))
+		if ($this->dataRepository->storeTestResult($test, $lines, $ok))
 		{
 			$this->command->info('OK');
 		}
@@ -163,4 +168,5 @@ class Tester {
 	{
 		$this->command->line($line);
 	}
+
 }

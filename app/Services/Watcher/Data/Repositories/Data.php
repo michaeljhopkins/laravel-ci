@@ -11,6 +11,7 @@ use App\Services\Watcher\Data\Entities\Test;
 use Symfony\Component\Finder\Finder;
 
 use Response;
+use Symfony\Component\Finder\SplFileInfo;
 
 class Data {
 
@@ -76,21 +77,33 @@ class Data {
 		$this->addTestToQueue($test);
 	}
 
-	public function syncTests()
+	public function syncTests($exclusions)
 	{
 		foreach($this->getSuites() as $suite)
 		{
-			$this->syncTestsForSuite($suite);
+			$this->syncTestsForSuite($suite, $exclusions);
 		}
 	}
 
-	private function syncTestsForSuite($suite)
+	private function syncTestsForSuite($suite, $exclusions)
 	{
 		$files = $this->getAllFilesFromSuite($suite);
 
 		foreach($files as $file)
 		{
-			$this->createOrUpdateTest($file, $suite);
+			if ( ! $this->isExcluded($exclusions, null, $file))
+			{
+				$this->createOrUpdateTest($file, $suite);
+			}
+			else
+			{
+				// If the test already exists, delete it.
+				//
+				if ($test = $this->findTestByNameAndSuite($file, $suite))
+				{
+					$test->delete();
+				}
+			}
 		}
 
 		foreach($suite->tests as $test)
@@ -157,14 +170,12 @@ class Data {
 		return $queue->test;
 	}
 
-	public function storeTestResult($test, $lines)
+	public function storeTestResult($test, $lines, $ok)
 	{
-		$ok = $this->testIsOk($test, $lines);
-
 		$run = Run::create([
 	        'test_id' => $test->id,
 	        'was_ok' => $ok,
-	        'log' => implode(PHP_EOL, $lines),
+	        'log' => $lines ?: '(empty)',
 		]);
 
 		$test->state = $ok ? self::STATE_OK : self::STATE_FAILED;
@@ -203,11 +214,88 @@ class Data {
 		$test->save();
 	}
 
-	public function getAllTests()
+	public function deleteUnavailableTesters($testers)
+	{
+		foreach(Tester::all() as $tester)
+		{
+			if ( ! in_array($tester->name, $testers))
+			{
+				$tester->delete();
+			}
+		}
+	}
+
+	public function deleteUnavailableProjects($projects)
+	{
+		foreach(Project::all() as $project)
+		{
+			if ( ! in_array($project->name, $projects))
+			{
+				$project->delete();
+			}
+		}
+	}
+
+	public function isExcluded($exclusions, $path, $file = '')
+	{
+		if ($file)
+		{
+			if ( ! $file instanceof SplFileInfo)
+			{
+				$path = make_path([$path, $file]);
+			}
+			else
+			{
+				$path = $file->getPathname();
+			}
+		}
+
+		foreach($exclusions ?: [] as $excluded)
+		{
+			if (starts_with($path, $excluded))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param $suite
+	 * @param $file
+	 * @return mixed
+	 */
+	private function findTestByNameAndSuite($file, $suite)
+	{
+		return Test::where('name', $file->getRelativePathname())->where('suite_id', $suite->id)->first();
+	}
+
+	public function getTests($project_id = null)
 	{
 		$tests = [];
 
-		foreach (Test::orderBy('updated_at', 'desc')->get() as $test)
+		$order = "case state = 'failed' or state = 'running'
+					  when true
+						then
+					     case state = 'failed'
+					       when true
+					       then now() + interval '1' minute
+					       else now()
+					     end
+					  else tests.updated_at
+					end";
+
+		$query = Test::select('tests.*')
+					->join('suites', 'suites.id', '=', 'suite_id')
+					->orderByRaw($order);
+
+		if ($project_id)
+		{
+			$query->where('project_id', $project_id);
+		}
+
+		foreach ($query->get() as $test)
 		{
 			$tests[] = [
 				'id' => $test->id,
@@ -220,4 +308,8 @@ class Data {
 		return Response::json($tests);
 	}
 
+	public function getProjects()
+	{
+		return Response::json(Project::all());
+	}
 }

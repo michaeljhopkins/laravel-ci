@@ -1,33 +1,34 @@
 <?php namespace App\Http\Controllers;
 
 use App\Services\Watcher\Data\Repositories\Data;
-use Artisan;
 
 class HomeController extends Controller {
 
-	/*
-	|--------------------------------------------------------------------------
-	| Default Home Controller
-	|--------------------------------------------------------------------------
-	|
-	| You may wish to use controllers instead of, or in addition to, Closure
-	| based routes. That's great! Here is an example controller method to
-	| get you started. To route to this controller, just add the route:
-	|
-	|	$router->get('/', 'HomeController@showWelcome');
-	|
-	*/
+	/**
+	 * @var Data
+	 */
+	private $dataRepository;
+
+	public function __construct(Data $dataRepository)
+	{
+		$this->dataRepository = $dataRepository;
+	}
 
 	public function index()
 	{
-//		Artisan::call('ci:watch');
+		// \Artisan::call('ci:watch'); /// !!!!! YOU HAVE TO DISABLE WATCH()!!!!
 
 		return view('home');
 	}
 
-	public function allTests(Data $dataRepository)
+	public function allTests($project_id = null)
 	{
-		return $dataRepository->getAllTests();
+		return $this->dataRepository->getTests($project_id);
+	}
+
+	public function allProjects()
+	{
+		return $this->dataRepository->getProjects();
 	}
 
 }

@@ -50,7 +50,7 @@ class Watcher {
 	 *
 	 * @var
 	 */
-	protected $excludeFolders;
+	protected $exclusions;
 
 	/**
 	 * Watcher Repository.
@@ -81,11 +81,7 @@ class Watcher {
 	{
 		$this->command = $command;
 
-		$this->command->comment('Laravel-CI - Watcher');
-
 		$this->initialize();
-
-		$this->command->line('Watching...');
 
 		$this->watch();
 
@@ -98,19 +94,30 @@ class Watcher {
 	 */
 	private function initialize()
 	{
+		$this->command->comment('Laravel-CI - Watcher');
+
 		if ( ! $this->is_initialized)
 		{
-			$this->command->line('Loading testers...');
-			$this->loadTesters();
-
-			$this->command->line('Loading projects and suites...');
-			$this->loadProjects();
-
-			$this->command->line('Loading tests...');
-			$this->loadTests();
+			$this->loadEverything();
 
 			$this->is_initialized = true;
 		}
+	}
+
+	/**
+	 * Read configuration and load testers, projects, suites...
+	 *
+	 */
+	private function loadEverything()
+	{
+		$this->command->line('Loading testers...');
+		$this->loadTesters();
+
+		$this->command->line('Loading projects and suites...');
+		$this->loadProjects();
+
+		$this->command->line('Loading tests...');
+		$this->loadTests();
 	}
 
 	/**
@@ -123,6 +130,8 @@ class Watcher {
 		{
 			$this->dataRepository->createOrUpdateTester($name, $data);
 		}
+
+		$this->dataRepository->deleteUnavailableTesters(array_keys(Config::get('watcher.testers')));
 	}
 
 	/**
@@ -142,8 +151,10 @@ class Watcher {
 
 			$this->addToWatchFolders($data['path'], $data['watch_folders']);
 
-			$this->addToExcludeFolders($data['path'], $data['exclude_folders']);
+			$this->addToExclusions($data['path'], $data['exclude_folders']);
 		}
+
+		$this->dataRepository->deleteUnavailableProjects(array_keys(Config::get('watcher.projects')));
 	}
 
 	/**
@@ -152,7 +163,7 @@ class Watcher {
 	 */
 	private function loadTests()
 	{
-		$this->dataRepository->syncTests();
+		$this->dataRepository->syncTests($this->exclusions);
 	}
 
 	/**
@@ -169,16 +180,18 @@ class Watcher {
 		}
 	}
 
-	private function addToExcludeFolders($path, $exclude_folders)
+	private function addToExclusions($path, $exclude_folders)
 	{
 		foreach($exclude_folders as $folder)
 		{
-			$this->excludeFolders[] = make_path([$path, $folder]);
+			$this->exclusions[] = make_path([$path, $folder]);
 		}
 	}
 
 	private function watch()
 	{
+		$this->command->line('Watching...');
+
 		$me = $this;
 
 		foreach($this->watchFolders as $folder)
@@ -187,7 +200,7 @@ class Watcher {
 
 			$this->listeners[$folder]->anything(function($event, $resource, $path) use ($me)
 			{
-				if ( ! $me->folderIsExcluded($path))
+				if ( ! $me->isExcluded($path))
 				{
 					$me->fireEvent($event, $resource, $path);
 				}
@@ -246,17 +259,9 @@ class Watcher {
 		return $event;
 	}
 
-	public function folderIsExcluded($folder)
+	public function isExcluded($folder)
 	{
-		foreach($this->excludeFolders as $excluded)
-		{
-			if (starts_with($folder, $excluded))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return $this->dataRepository->isExcluded($this->exclusions, $folder);
 	}
 
 }
