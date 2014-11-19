@@ -49,7 +49,7 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
 
 		<script type="text/jsx">
-			@include('javascripts.app')
+			@include('javascripts.reactjs-app')
 		</script>
 	</body>
 </html>

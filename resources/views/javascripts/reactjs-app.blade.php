@@ -1,46 +1,58 @@
 var EventSystem = (function() {
-  var self = this;
+    var self = this;
 
-  self.queue = {};
+    self.queue = {};
 
-  return {
-    fire: function (event, data) {
-      var queue = self.queue[event];
+    return {
+        fire: function (event, data)
+        {
+            var queue = self.queue[event];
 
-      if (typeof queue === 'undefined') {
-        return false;
-      }
+            if (typeof queue === 'undefined')
+            {
+                return false;
+            }
 
-      jQuery.each( queue, function( key, method ) {
-        (method)(data);
-      });
+            jQuery.each( queue, function( key, method )
+            {
+                (method)(data);
+            });
 
-      return true;
-    },
-    listen: function(event, callback) {
-      if (typeof self.queue[event] === 'undefined') {
-        self.queue[event] = [];
-      }
+            return true;
+        },
 
-      self.queue[event].push(callback);
-    }
-  };
+        listen: function(event, callback)
+        {
+            if (typeof self.queue[event] === 'undefined')
+            {
+                self.queue[event] = [];
+            }
+
+            self.queue[event].push(callback);
+        }
+    };
 }());
 
-var TestsTable = React.createClass({
+var TestsTable = React.createClass(
+{
     getInitialState: function() {
         return {data: [], selected: { name: '', id: null}};
     },
 
-    loadFromServer: function() {
+    loadFromServer: function()
+    {
         if (this.state.selected.id)
         {
-            $.ajax({
+            $.ajax(
+            {
                 url: this.props.url + this.state.selected.id,
+
                 dataType: 'json',
+
                 success: function(data) {
                     this.setState({data: data});
                 }.bind(this),
+
                 error: function(xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
                 }.bind(this)
@@ -48,17 +60,24 @@ var TestsTable = React.createClass({
         }
     },
 
-    componentDidMount: function() {
+    componentDidMount: function()
+    {
         this.loadFromServer();
+
         setInterval(this.loadFromServer, this.props.pollInterval);
+
         EventSystem.listen('selected.changed', this.selectedChanged);
     },
 
-    selectedChanged: function(event) {
+    selectedChanged: function(event)
+    {
         this.setState({selected: event.selected});
+
+        this.loadFromServer();
     },
 
-    render: function() {
+    render: function()
+    {
         return (
             <TestList data={this.state.data} />
         );
@@ -66,19 +85,23 @@ var TestsTable = React.createClass({
 });
 
 var TestList = React.createClass({
-    getInitialState: function() {
+    getInitialState: function()
+    {
         return {data: [], selected: { name: '', id: null}};
     },
 
-    componentDidMount: function() {
+    componentDidMount: function()
+    {
         EventSystem.listen('selected.changed', this.selectedChanged);
     },
 
-    selectedChanged: function(event) {
+    selectedChanged: function(event)
+    {
         this.setState({selected: event.selected});
     },
 
-    render: function() {
+    render: function()
+    {
         var testNodes = this.props.data.map(function (test)
         {
             return (
@@ -112,8 +135,10 @@ var TestList = React.createClass({
     }
 });
 
-var State = React.createClass({
-    render: function() {
+var State = React.createClass(
+{
+    render: function()
+    {
         var color;
 
         if (this.props.type == 'running')
@@ -146,30 +171,40 @@ React.render(
 
 // ------------------------ Projects
 
-var ProjectsMenu = React.createClass({
-    getInitialState: function() {
-        return {data: []};
+var ProjectsMenu = React.createClass(
+{
+    getInitialState: function()
+    {
+        return {data: [], selected: { name: '', id: null}};
     },
 
-    loadFromServer: function() {
+    loadFromServer: function()
+    {
         $.ajax({
             url: this.props.url,
+
             dataType: 'json',
-            success: function(data) {
+
+            success: function(data)
+            {
                 this.setState({data: data});
                 EventSystem.fire('selected.changed', { selected: { name: data[0].name, id: data[0].id }});
             }.bind(this),
-            error: function(xhr, status, err) {
+
+            error: function(xhr, status, err)
+            {
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
     },
 
-    componentDidMount: function() {
+    componentDidMount: function()
+    {
         this.loadFromServer();
     },
 
-    render: function() {
+    render: function()
+    {
         return (
             <ProjectsMenuItems data={this.state.data} />
         );
@@ -178,22 +213,44 @@ var ProjectsMenu = React.createClass({
 
 var ProjectsMenuItems = React.createClass(
 {
+    getInitialState: function()
+    {
+        return {data: [], selected: { name: '', id: null}};
+    },
+
+    componentDidMount: function()
+    {
+        EventSystem.listen('selected.changed', this.selectedChanged);
+    },
+
+    selectedChanged: function(event)
+    {
+        this.setState({selected: event.selected});
+    },
+
     handleClick: function(name, id)
     {
-        console.log(name);
-        console.log(id);
         EventSystem.fire('selected.changed', { selected: { name: name, id: id }});
     },
 
-    render: function() {
-        var nodes = this.props.data.map(function (project)
+    render: function()
+    {
+        var nodes = [];
+
+        for (index = 0; index < this.props.data.length; ++index)
         {
-            return (
-                <li key={project.id} onClick={this.handleClick.bind(this, project.name, project.id)}>
+            project = this.props.data[index];
+
+            nodes.push(
+                <li
+                    key={project.id}
+                    className={project.id == this.state.selected.id ? 'active' : ''}
+                    onClick={this.handleClick.bind(this, project.name, project.id)}
+                >
                     <a href="#">{project.name}</a>
                 </li>
             );
-        }.bind(this));
+        }
 
         return (
             <ul className="nav nav-sidebar">

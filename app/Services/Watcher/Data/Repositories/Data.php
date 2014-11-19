@@ -280,11 +280,13 @@ class Data {
 						then
 					     case state = 'failed'
 					       when true
-					       then now() + interval '1' minute
-					       else now()
+					        then DATE '2070-10-31 00:00:01'
+					       else DATE '2070-10-31 00:00:00'
 					     end
 					  else tests.updated_at
-					end";
+					end
+
+					desc";
 
 		$query = Test::select('tests.*')
 					->join('suites', 'suites.id', '=', 'suite_id')
