@@ -53,6 +53,10 @@ var BootstrapModal = React.createClass(
           backgroundColor: 'black',
           color: 'white',
           fontFamily: 'Courier New',
+          maxHeight: 'calc(100vh - 150px)',
+          overflowY: 'auto',
+          overflowX: 'auto',
+          whiteSpace: 'pre',
         };
 
 		return (
@@ -308,8 +312,6 @@ var LogButton = React.createClass(
     		{
                 __html: this.props.log
             }});
-
-            console.log(this.props.log);
 
             modal = (
                 <BootstrapModal

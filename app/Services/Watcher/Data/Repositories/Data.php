@@ -341,8 +341,6 @@ class Data {
 
 		$log = str_replace(chr(13), '<br>', $log);
 
-		$log = str_replace('  ', '&nbsp;&nbsp;', $log);
-
 		return $log;
 	}
 
