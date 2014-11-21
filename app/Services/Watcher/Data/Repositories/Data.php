@@ -12,6 +12,7 @@ use Symfony\Component\Finder\Finder;
 
 use Response;
 use Symfony\Component\Finder\SplFileInfo;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 class Data {
 
@@ -299,11 +300,14 @@ class Data {
 
 		foreach ($query->get() as $test)
 		{
+			$log = $this->formatLog($test->runs->last()->first());
+
 			$tests[] = [
 				'id' => $test->id,
 			    'name' => $test->name,
 			    'updated_at' => $test->updated_at->diffForHumans(),
 			    'state' => $test->state,
+			    'log' => $log,
 			];
 		}
 
@@ -314,4 +318,32 @@ class Data {
 	{
 		return Response::json(Project::all());
 	}
+
+	private function formatLog($log)
+	{
+		if ($log)
+		{
+			$log = $this->ansi2Html($log->log);
+		}
+
+		return $log;
+	}
+
+	private function ansi2Html($log)
+	{
+		$converter = new AnsiToHtmlConverter();
+
+		$log = $converter->convert($log);
+
+		$log = str_replace(chr(13).chr(10), '<br>', $log);
+
+		$log = str_replace(chr(10), '<br>', $log);
+
+		$log = str_replace(chr(13), '<br>', $log);
+
+		$log = str_replace('  ', '&nbsp;&nbsp;', $log);
+
+		return $log;
+	}
+
 }

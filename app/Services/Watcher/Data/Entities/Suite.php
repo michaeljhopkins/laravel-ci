@@ -43,7 +43,7 @@ class Suite extends Model {
 		return $this->hasMany('App\Services\Watcher\Data\Entities\Test');
 	}
 
-	public function getTestCommandAttribute($value)
+	public function getTestCommandAttribute()
 	{
 		$command = $this->tester->command . ' ' . $this->command_options;
 

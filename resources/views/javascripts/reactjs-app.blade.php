@@ -1,3 +1,121 @@
+// ------------------------------------------------
+// ---- Modal
+
+var BootstrapModal = React.createClass(
+{
+	// The following two methods are the only places we need to
+	// integrate with Bootstrap or jQuery!
+	componentDidMount: function()
+	{
+		// When the component is added, turn it into a modal
+		$(this.getDOMNode())
+			.modal({backdrop: 'static', keyboard: false, show: false})
+	},
+
+	componentWillUnmount: function()
+	{
+		$(this.getDOMNode()).off('hidden', this.handleHidden);
+	},
+
+	close: function()
+	{
+		$(this.getDOMNode()).modal('hide');
+	},
+
+	open: function()
+	{
+		$(this.getDOMNode()).modal('show');
+	},
+
+	render: function()
+	{
+		var confirmButton = null;
+		var cancelButton = null;
+
+		if (this.props.confirm) {
+			confirmButton = (
+				<BootstrapButton
+					onClick={this.handleConfirm}
+					className="btn-primary">
+					{this.props.confirm}
+				</BootstrapButton>
+			);
+		}
+		if (this.props.cancel) {
+			cancelButton = (
+				<BootstrapButton onClick={this.handleCancel} className="btn-default">
+					{this.props.cancel}
+				</BootstrapButton>
+			);
+		}
+
+        var divStyle = {
+          backgroundColor: 'black',
+          color: 'white',
+          fontFamily: 'Courier New',
+        };
+
+		return (
+			<div className="modal fade">
+				<div className="modal-dialog modal-lg">
+					<div className="modal-content">
+						<div className="modal-header">
+							<button
+								type="button"
+								className="close"
+								dataDismiss="modal"
+								onClick={this.handleCancel}>
+								&times;
+							</button>
+							<h3>{this.props.title}</h3>
+						</div>
+
+						<div className="modal-body" style={divStyle}>
+                            {this.props.children}
+						</div>
+
+						<div className="modal-footer">
+							{cancelButton}
+							{confirmButton}
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	},
+
+	handleCancel: function() {
+		if (this.props.onCancel) {
+			this.props.onCancel();
+		}
+	},
+
+	handleConfirm: function() {
+		if (this.props.onConfirm) {
+			this.props.onConfirm();
+		}
+	}
+});
+
+
+// ------------------------------------------------
+// ---- Bootstrap Button
+
+var BootstrapButton = React.createClass(
+{
+  render: function() {
+    return (
+      <a {...this.props}
+        href="javascript:;"
+        role="button"
+        className={(this.props.className || '') + ' btn'} />
+    );
+  }
+});
+
+// ------------------------------------------------
+// ---- EventSystem
+
 var EventSystem = (function() {
     var self = this;
 
@@ -32,6 +150,9 @@ var EventSystem = (function() {
         }
     };
 }());
+
+// ------------------------------------------------
+// ---- Test Table
 
 var TestsTable = React.createClass(
 {
@@ -84,6 +205,9 @@ var TestsTable = React.createClass(
     }
 });
 
+// ------------------------------------------------
+// ---- Test List
+
 var TestList = React.createClass({
     getInitialState: function()
     {
@@ -109,6 +233,7 @@ var TestList = React.createClass({
                     <td>{test.name}</td>
                     <td>{test.updated_at}</td>
                     <td><State type={test.state} /></td>
+                    <td><LogButton type={test.state} log={test.log} name={test.name} /></td>
                 </tr>
             );
         });
@@ -123,6 +248,7 @@ var TestList = React.createClass({
                             <th width="70%">Test</th>
                             <th>Last Run</th>
                             <th>State</th>
+                            <th>Log</th>
                         </tr>
                     </thead>
 
@@ -134,6 +260,9 @@ var TestList = React.createClass({
         );
     }
 });
+
+// ------------------------------------------------
+// ---- State
 
 var State = React.createClass(
 {
@@ -164,12 +293,68 @@ var State = React.createClass(
     }
 });
 
-React.render(
-    <TestsTable url={"/tests/"} pollInterval={2000}/>,
-    document.getElementById('table-container')
-);
+// ------------------------------------------------
+// ---- Log Button
 
-// ------------------------ Projects
+var LogButton = React.createClass(
+{
+    render: function()
+    {
+        if (this.props.type == 'failed')
+        {
+            var modal = null;
+
+    		body = React.DOM.div({ dangerouslySetInnerHTML:
+    		{
+                __html: this.props.log
+            }});
+
+            console.log(this.props.log);
+
+            modal = (
+                <BootstrapModal
+                    ref="modal"
+                    confirm="Close"
+                    onConfirm={this.closeModal}
+                    onCancel={this.closeModal}
+                    title={this.props.name}
+                >
+                    {body}
+                </BootstrapModal>
+            );
+
+            return (
+                <div className="example">
+                    {modal}
+
+                    <button
+                        type="button"
+                        className="btn btn-xs btn-primary"
+                        onClick={this.openModal}
+                    >
+                        Show
+                    </button>
+                </div>
+           );
+        }
+
+        return false;
+    },
+
+    openModal: function()
+    {
+        this.refs.modal.open();
+    },
+
+    closeModal: function()
+    {
+        this.refs.modal.close();
+    }
+
+});
+
+// ------------------------------------------------
+// ---- Projects
 
 var ProjectsMenu = React.createClass(
 {
@@ -210,6 +395,9 @@ var ProjectsMenu = React.createClass(
         );
     }
 });
+
+// ------------------------------------------------
+// ---- Menu Items
 
 var ProjectsMenuItems = React.createClass(
 {
@@ -261,7 +449,16 @@ var ProjectsMenuItems = React.createClass(
 
 });
 
+// ------------------------------------------------
+// ---- Rendering
+
+React.render(
+    <TestsTable url={"/tests/"} pollInterval={2000}/>,
+    document.getElementById('table-container')
+);
+
 React.render(
     <ProjectsMenu url="/projects"/>,
     document.getElementById('projects')
 );
+

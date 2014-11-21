@@ -29,4 +29,9 @@ class Test extends Model {
 		return $command . ' ' . $this->fullPath;
 	}
 
+	public function runs()
+	{
+		return $this->hasMany('App\Services\Watcher\Data\Entities\Run');
+	}
+
 }
