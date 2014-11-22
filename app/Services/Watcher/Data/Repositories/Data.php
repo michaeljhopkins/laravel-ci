@@ -151,19 +151,25 @@ class Data {
 
 	public function addTestToQueue($test)
 	{
-		Queue::updateOrCreate(['test_id' => $test->id]);
-
-		if ( ! in_array($test->state, [self::STATE_RUNNING, self::STATE_QUEUED]))
+		if ($test->enabled)
 		{
-            $test->state = self::STATE_QUEUED;
+			Queue::updateOrCreate(['test_id' => $test->id]);
 
-			$test->save();
-        }
+			if ( ! in_array($test->state, [self::STATE_RUNNING, self::STATE_QUEUED]))
+			{
+				$test->state = self::STATE_QUEUED;
+
+				$test->save();
+			}
+		}
 	}
 
 	public function getNextTestFromQueue()
 	{
-		if ( ! $queue = Queue::first())
+		$query = Queue::join('tests', 'tests.id', '=', 'queue.test_id')
+						->where('tests.enabled', true);
+
+		if ( ! $queue = $query->first() )
 		{
 			return;
 		}
@@ -300,7 +306,10 @@ class Data {
 
 		foreach ($query->get() as $test)
 		{
-			$log = $this->formatLog($test->runs->last()->first());
+			if ($log = Run::where('test_id', $test->id)->orderBy('created_at', 'desc')->first())
+			{
+				$log = $this->formatLog($log);
+			}
 
 			$tests[] = [
 				'id' => $test->id,
@@ -308,6 +317,7 @@ class Data {
 			    'updated_at' => $test->updated_at->diffForHumans(),
 			    'state' => $test->state,
 			    'log' => $log,
+			    'enabled' => $test->enabled,
 			];
 		}
 
@@ -342,6 +352,40 @@ class Data {
 		$log = str_replace(chr(13), '<br>', $log);
 
 		return $log;
+	}
+
+	public function enableTests($enable, $project_id, $test_id = null)
+	{
+		$enable = $enable === 'true';
+
+		$query = new Test;
+		$query->timestamps = false;
+
+		$query = $query->newQuery()
+						->join('suites','suites.id', '=', 'tests.suite_id')
+						->where('suites.project_id', $project_id);
+
+		if ($test_id)
+		{
+			$query->where('tests.id', $test_id);
+		}
+
+		$query->update(['enabled' => $enable]);
+
+		$this->enqueueEnabledTests();
+
+		return Response::json(['success' => true, 'state' => $enable]);
+	}
+
+	private function enqueueEnabledTests()
+	{
+		$tests = Test::where('state', self::STATE_INITIALIZED)
+						->where('enabled', true)->get();
+
+		foreach($tests as $test)
+		{
+			$this->addTestToQueue($test);
+		}
 	}
 
 }

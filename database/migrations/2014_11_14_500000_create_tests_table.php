@@ -22,6 +22,8 @@ class CreateTestsTable extends Migration {
 
 			$table->string('state');
 
+			$table->boolean('enabled')->default(true);
+
 			$table->integer('last_run_id')->unsigned()->nullable();
 
 			$table->timestamps();

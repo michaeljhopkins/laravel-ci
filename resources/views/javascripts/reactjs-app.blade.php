@@ -36,20 +36,25 @@ var BootstrapModal = React.createClass(
 			confirmButton = (
 				<BootstrapButton
 					onClick={this.handleConfirm}
-					className="btn-primary">
+					className="btn-primary"
+				>
 					{this.props.confirm}
 				</BootstrapButton>
 			);
 		}
 		if (this.props.cancel) {
 			cancelButton = (
-				<BootstrapButton onClick={this.handleCancel} className="btn-default">
+				<BootstrapButton
+				    onClick={this.handleCancel}
+				    className="btn-default"
+				    dataKeyboard="true"
+				>
 					{this.props.cancel}
 				</BootstrapButton>
 			);
 		}
 
-        var divStyle = {
+        var modalBodyStyle = {
           backgroundColor: 'black',
           color: 'white',
           fontFamily: 'Courier New',
@@ -59,9 +64,13 @@ var BootstrapModal = React.createClass(
           whiteSpace: 'pre',
         };
 
+        var modalDialogStyle = {
+            width: '90%',
+        };
+
 		return (
-			<div className="modal fade">
-				<div className="modal-dialog modal-lg">
+			<div className="modal fade" tabIndex='-1'>
+				<div className="modal-dialog modal-lg" style={modalDialogStyle}>
 					<div className="modal-content">
 						<div className="modal-header">
 							<button
@@ -74,7 +83,7 @@ var BootstrapModal = React.createClass(
 							<h3>{this.props.title}</h3>
 						</div>
 
-						<div className="modal-body" style={divStyle}>
+						<div className="modal-body" style={modalBodyStyle}>
                             {this.props.children}
 						</div>
 
@@ -107,14 +116,17 @@ var BootstrapModal = React.createClass(
 
 var BootstrapButton = React.createClass(
 {
-  render: function() {
-    return (
-      <a {...this.props}
-        href="javascript:;"
-        role="button"
-        className={(this.props.className || '') + ' btn'} />
-    );
-  }
+    render: function() {
+        return (
+            <a
+                {...this.props}
+                href="javascript:;"
+                role="button"
+                className={(this.props.className || '') + ' btn'}
+                data-keyboard="true"
+            />
+        );
+    }
 });
 
 // ------------------------------------------------
@@ -212,7 +224,8 @@ var TestsTable = React.createClass(
 // ------------------------------------------------
 // ---- Test List
 
-var TestList = React.createClass({
+var TestList = React.createClass(
+{
     getInitialState: function()
     {
         return {data: [], selected: { name: '', id: null}};
@@ -228,19 +241,37 @@ var TestList = React.createClass({
         this.setState({selected: event.selected});
     },
 
+    toogleAll: function(event, whatever)
+    {
+        {{--jQuery('.testCheckbox').prop('checked', event.target.checked);--}}
+
+        console.log(this.state.selected.id);
+
+        $.ajax({
+            url: '/tests/enable/'+event.target.checked+'/'+this.state.selected.id,
+
+            dataType: 'json',
+
+            success: function(data)
+            {
+                jQuery('.testCheckbox').prop('checked', data.state);
+            }.bind([this, event]),
+
+            error: function(xhr, status, err)
+            {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
     render: function()
     {
         var testNodes = this.props.data.map(function (test)
         {
             return (
-                <tr key={test.id}>
-                    <td>{test.name}</td>
-                    <td>{test.updated_at}</td>
-                    <td><State type={test.state} /></td>
-                    <td><LogButton type={test.state} log={test.log} name={test.name} /></td>
-                </tr>
+                <TestRow key={test.id} test={test} projectId={this.state.selected.id} />
             );
-        });
+        }, this);
 
         return (
             <div>
@@ -249,6 +280,13 @@ var TestList = React.createClass({
                 <table className="table">
                     <thead>
                         <tr>
+                            <th>
+                                <input
+                                    type="checkbox"
+                                    title="Mark to enable test"
+                                    onClick={this.toogleAll}
+                                />
+                            </th>
                             <th width="70%">Test</th>
                             <th>Last Run</th>
                             <th>State</th>
@@ -264,6 +302,48 @@ var TestList = React.createClass({
         );
     }
 });
+
+// ------------------------------------------------
+// ---- TestRow
+
+var TestRow = React.createClass(
+{
+    toogleOne: function(event, whatever)
+    {
+        $.ajax({
+            url: '/tests/enable/'+event.target.checked+'/'+this.props.projectId+'/'+this.props.test.id,
+
+            dataType: 'json',
+
+            error: function(xhr, status, err)
+            {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    render: function()
+    {
+        return (
+            <tr key={this.props.test.id}>
+                <td>
+                    <input
+                        type="checkbox"
+                        title="Mark to enable test"
+                        className="testCheckbox"
+                        onClick={this.toogleOne}
+                        checked={this.props.test.enabled}
+                    />
+                </td>
+                <td>{this.props.test.name}</td>
+                <td>{this.props.test.updated_at}</td>
+                <td><State type={this.props.test.state} /></td>
+                <td><LogButton type={this.props.test.state} log={this.props.test.log} name={this.props.test.name} /></td>
+            </tr>
+        );
+    }
+});
+
 
 // ------------------------------------------------
 // ---- State
@@ -333,6 +413,7 @@ var LogButton = React.createClass(
                         type="button"
                         className="btn btn-xs btn-primary"
                         onClick={this.openModal}
+                        data-keyboard="true"
                     >
                         Show
                     </button>
@@ -455,7 +536,7 @@ var ProjectsMenuItems = React.createClass(
 // ---- Rendering
 
 React.render(
-    <TestsTable url={"/tests/"} pollInterval={2000}/>,
+    <TestsTable url={"/tests/all/"} pollInterval={2000}/>,
     document.getElementById('table-container')
 );
 
