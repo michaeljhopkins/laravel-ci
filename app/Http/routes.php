@@ -13,12 +13,6 @@
 
 $router->get('/', 'HomeController@index');
 
-$router->get('tests/all/{project_id?}', 'TestsController@allTests');
-
-$router->get('tests/enable/{enable}/{project_id}/{test_id?}', 'TestsController@enableTests');
-
-$router->get('projects', 'TestsController@allProjects');
-
 /*
 |--------------------------------------------------------------------------
 | Authentication & Password Reset Controllers

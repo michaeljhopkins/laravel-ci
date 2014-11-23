@@ -141,9 +141,7 @@ return [
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 
-		'App\Services\Watcher\Service\Provider',
-
-		'JasonLewis\ResourceWatcher\Integration\LaravelServiceProvider',
+		'PragmaRX\Ci\Vendor\Laravel\ServiceProvider',
 	],
 
 	/*
