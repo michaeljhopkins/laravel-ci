@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "aeaf9de607efea6ad1c0c1f78182bee4",
+    "hash": "d18be136f5dc8248c29931718ddc743b",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -813,32 +813,30 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/antonioribeiro/ci.git",
-                "reference": "6b367ef767603c8effe289e4f922f575badbe4ca"
+                "reference": "27a3f6066163e365080a5622d035a59d360efaeb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antonioribeiro/ci/zipball/6b367ef767603c8effe289e4f922f575badbe4ca",
-                "reference": "6b367ef767603c8effe289e4f922f575badbe4ca",
+                "url": "https://api.github.com/repos/antonioribeiro/ci/zipball/27a3f6066163e365080a5622d035a59d360efaeb",
+                "reference": "27a3f6066163e365080a5622d035a59d360efaeb",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.7"
-            },
-            "require-dev": {
-                "mockery/mockery": "0.8.0"
+                "illuminate/filesystem": "dev-master as 4.2.0",
+                "illuminate/support": "dev-master as 4.2.0",
+                "jasonlewis/resource-watcher": "~1",
+                "laravel/framework": "dev-master as 4.2.0",
+                "php": ">=5.4.0",
+                "pragmarx/ci": "dev-master as 0.1.0",
+                "pragmarx/support": "dev-master as 0.2.0",
+                "sensiolabs/ansi-to-html": "~1"
             },
             "type": "library",
             "extra": {
                 "component": "package",
                 "frameworks": [
-                    "Laravel 4"
-                ],
-                "versions": {
-                    "0.1.0": "master"
-                },
-                "branch-alias": {
-                    "dev-master": "0.1.0-dev"
-                }
+                    "Laravel 5"
+                ]
             },
             "autoload": {
                 "psr-4": {
@@ -846,7 +844,7 @@
                 }
             },
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -855,7 +853,7 @@
                     "role": "Creator & Designer"
                 }
             ],
-            "description": "<Full package description.>",
+            "description": "A Continuous Integration Dashboard Package for Laravel",
             "keywords": [
                 "laravel"
             ],
@@ -863,7 +861,7 @@
                 "source": "https://github.com/antonioribeiro/ci/tree/master",
                 "issues": "https://github.com/antonioribeiro/ci/issues"
             },
-            "time": "2014-11-23 15:59:38"
+            "time": "2014-11-23 22:28:30"
         },
         {
             "name": "pragmarx/support",
@@ -1064,12 +1062,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "d0f361d88e5de851bbb8c542d3b6aa46d61a9ffc"
+                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/d0f361d88e5de851bbb8c542d3b6aa46d61a9ffc",
-                "reference": "d0f361d88e5de851bbb8c542d3b6aa46d61a9ffc",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/84ff290871c3436c3703ce15ec5e344da0b59472",
+                "reference": "84ff290871c3436c3703ce15ec5e344da0b59472",
                 "shasum": ""
             },
             "require": {
@@ -1108,7 +1106,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2014-10-30 13:41:35"
+            "time": "2014-11-23 19:27:48"
         },
         {
             "name": "symfony/console",
@@ -1174,12 +1172,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Debug.git",
-                "reference": "15b9784606b07d28840ec2ed06c68fb593155be0"
+                "reference": "bc1ba62d5d61d17c89d89b593b416efd449534b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Debug/zipball/15b9784606b07d28840ec2ed06c68fb593155be0",
-                "reference": "15b9784606b07d28840ec2ed06c68fb593155be0",
+                "url": "https://api.github.com/repos/symfony/Debug/zipball/bc1ba62d5d61d17c89d89b593b416efd449534b9",
+                "reference": "bc1ba62d5d61d17c89d89b593b416efd449534b9",
                 "shasum": ""
             },
             "require": {
@@ -1221,7 +1219,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-20 13:24:23"
+            "time": "2014-11-23 20:21:44"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1435,12 +1433,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel.git",
-                "reference": "318fc2d37e03ce4fc7fe45cfdc7899fd033ededa"
+                "reference": "e80983a2f6d3258734f845e2b974b952ef9a09f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/318fc2d37e03ce4fc7fe45cfdc7899fd033ededa",
-                "reference": "318fc2d37e03ce4fc7fe45cfdc7899fd033ededa",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/e80983a2f6d3258734f845e2b974b952ef9a09f8",
+                "reference": "e80983a2f6d3258734f845e2b974b952ef9a09f8",
                 "shasum": ""
             },
             "require": {
@@ -1501,7 +1499,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-20 13:24:23"
+            "time": "2014-11-23 20:57:16"
         },
         {
             "name": "symfony/process",
@@ -2694,32 +2692,11 @@
             "alias_normalized": "4.0.0.0",
             "version": "9999999-dev",
             "package": "laravel/framework"
-        },
-        {
-            "alias": "4.0.0",
-            "alias_normalized": "4.0.0.0",
-            "version": "9999999-dev",
-            "package": "illuminate/support"
-        },
-        {
-            "alias": "4.0.0",
-            "alias_normalized": "4.0.0.0",
-            "version": "9999999-dev",
-            "package": "illuminate/filesystem"
-        },
-        {
-            "alias": "0.2.0",
-            "alias_normalized": "0.2.0.0",
-            "version": "9999999-dev",
-            "package": "pragmarx/support"
         }
     ],
     "minimum-stability": "dev",
     "stability-flags": {
         "laravel/framework": 20,
-        "illuminate/support": 20,
-        "illuminate/filesystem": 20,
-        "pragmarx/support": 20,
         "pragmarx/ci": 20
     },
     "prefer-stable": false,

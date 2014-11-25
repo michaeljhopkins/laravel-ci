@@ -6,12 +6,7 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "dev-master as 4.0.0",
-        "illuminate/support": "dev-master as 4.0.0",
-        "illuminate/filesystem": "dev-master as 4.0.0",
-        "pragmarx/support": "dev-master as 0.2.0",
-        "pragmarx/ci": "dev-master",
-        "jasonlewis/resource-watcher": "1.1.*",
-        "sensiolabs/ansi-to-html": "~1.1"
+        "pragmarx/ci": "dev-master"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0"
@@ -22,7 +17,6 @@
             "url":  "https://github.com/antonioribeiro/ci.git"
         }
     ],
-
 	"autoload": {
 		"classmap": [
 			"database",
