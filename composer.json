@@ -6,7 +6,10 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "dev-master as 4.0.0",
-        "pragmarx/ci": "dev-master"
+        "pragmarx/ci": "dev-master",
+		"behat/behat": "~3.0@dev",
+		"atoum/atoum": "dev-master",
+		"nette/tester": "~1.3@dev"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0"
